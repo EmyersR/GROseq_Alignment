@@ -10,7 +10,7 @@ mcf7_path   <- "data/processed/mcf7_granges.rds"
 mcf10a_path <- "data/processed/mcf10a_granges.rds"
 
 if (!file.exists(mcf7_path) || !file.exists(mcf10a_path)) {
-  message("❗ Missing GRO-Seq GRanges files. Run your import script first.")
+  message("Missing GRO-Seq GRanges files. Run your import script first.")
   quit(save = "no")
 }
 
@@ -33,4 +33,4 @@ saveRDS(calls_mcf10a, "data/processed/grohmm_calls_mcf10a.rds")
 rtracklayer::export(as(calls_mcf7, "GRanges"),   "data/processed/grohmm_mcf7.bed")
 rtracklayer::export(as(calls_mcf10a, "GRanges"), "data/processed/grohmm_mcf10a.bed")
 
-message("✅ GroHMM transcript calling complete.")
+message("GroHMM transcript calling complete.")
