@@ -1,6 +1,4 @@
-# ===============================
 # 02_qc_plots.R — GRO-seq QC Plots
-# ===============================
 
 # Load required packages
 library(GenomicRanges)
