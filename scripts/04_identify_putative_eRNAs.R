@@ -62,3 +62,4 @@ cat("MCF7 intergenic transcripts:", length(mcf7_intergenic), "\n")
 cat("MCF10A intergenic transcripts:", length(mcf10a_intergenic), "\n")
 cat("MCF7 putative eRNAs (H3K27ac overlap):", length(mcf7_putative_eRNAs), "\n")
 cat("MCF10A putative eRNAs (H3K27ac overlap):", length(mcf10a_putative_eRNAs), "\n")
+
