@@ -1,38 +1,44 @@
 # 04_identify_putative_eRNAs.R
-# Identify putative eRNAs from groHMM output (MCF7 vs MCF10A)
+# Identify intergenic GROseq transcripts (putative eRNAs, step 1)
 
-library(GenomicRanges)
-library(rtracklayer)
-library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+suppressPackageStartupMessages({
+  library(GenomicRanges)
+  library(rtracklayer)
+  library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+})
 
-# hg38 gene annotations
+# Load hg38 gene annotations (to remove genic transcripts)
 tx <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
 
-# Input BED files
-mcf7_grohmm_bed    <- "PATH_OR_URL_TO_MCF7_groHMM.bed"
-mcf10a_grohmm_bed    <- "PATH_OR_URL_TO_MCF10A_groHMM.bed"
-mcf7_h3k27ac_bed    <- "PATH_OR_URL_TO_MCF7_H3K27ac.bed"
-mcf10a_h3k27ac_bed    <- "PATH_OR_URL_TO_MCF10A_H3K27ac.bed"
+# Input files (relative to repo root)
+mcf7_bed <- "data/BC_eRNA_files/MCF7.final.transcripts.bed"
+mcf10a_bed <- "data/BC_eRNA_files/MCF10A.final.transcripts.bed"
 
-# Import data
-mcf7_tx    <- import(mcf7_grohmm_bed)
-mcf10a_tx    <- import(mcf10a_grohmm_bed)
-mcf7_h3k27ac    <- import(mcf7_h3k27ac_bed)
-mcf10a_h3k27ac    <- import(mc10a_h3k27ac_bed)
+mcf7_h3k27ac_bed <- "data/BC_eRNA_files/ENCFF491LQY_MCF7_H3K27AC.bed"
+mcf10a_h3k27ac_bed <- "data/BC_eRNA_files/ENCFF559BLN_MCF10A_H3K27AC.bed"
 
-# Filter to intergenic transcripts
-mcf7_intergenic    <- subsetByOverlaps(mcf7_tx, tx, invert = TRUE)
-mcf10a_intergenic    <- subsetByOverlaps(mcf10a_tx, tx, invert = TRUE)
+# Import GROseq transcripts
+mcf7_tx   <- import(mcf7_bed)
+mcf10a_tx <- import(mcf10a_bed)
 
-# Define putative eRNAs by H3K27ac overlap
-mcf7_putative_eRNAs  <- subsetByOverlaps(mcf7_intergenic, mcf7_h3k27ac)
-mcf10a_putative_eRNAs  <- subsetByOverlaps(mcf10a_intergenic, mcf10a_h3k27ac)
+# Remove transcripts overlapping known genes (keep intergenic only)
+mcf7_intergenic   <- subsetByOverlaps(mcf7_tx, tx, invert = TRUE)
+mcf10a_intergenic <- subsetByOverlaps(mcf10a_tx, tx, invert = TRUE)
 
-# Summary counts
-cat("MCF7:", length(mcf7_tx),
-    "-> intergenic:", length(mcf7_intergenic),
-    "-> eRNAs:", length(mcf7_putative_eRNAs), "\n")
+# Create output directory
+dir.create("data/processed", showWarnings = FALSE)
 
-cat("MCF10A:", length(mcf10a_tx),
-    "-> intergenic:", length(mcf10a_intergenic),
-    "-> eRNAs:", length(mcf10a_putative_eRNAs), "\n")
+# Save intergenic transcripts
+export(
+  mcf7_intergenic,
+  "data/processed/MCF7_intergenic_GROseq.bed"
+)
+
+export(
+  mcf10a_intergenic,
+  "data/processed/MCF10A_intergenic_GROseq.bed"
+)
+
+# Quick sanity check
+cat("MCF7 intergenic transcripts:", length(mcf7_intergenic), "\n")
+cat("MCF10A intergenic transcripts:", length(mcf10a_intergenic), "\n")
